@@ -14,7 +14,12 @@ module HStoreFlags
 
     send("#{field}_will_change!")
     if defined? changed_attributes
-      send(:changed_attributes).merge!(flag.to_s => old_val)
+      changed_attributes = send :changed_attributes
+      if changed_attributes.frozen?
+        changed_attributes.dup.merge!(flag.to_s => old_val).freeze
+      else
+        changed_attributes.merge!(flag.to_s => old_val)
+      end
     end
     fields = self[field] || {}
 
